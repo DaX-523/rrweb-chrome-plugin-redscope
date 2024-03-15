@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Simple WebSocket Example</title>
+  </head>
+  <body>
+    <label for="messageInput"></label>
+    <input type="text" id="messageInput" />
+    <button onclick="sendMessage()">Send</button>
+    <div id="messages"></div>
+
+    <script>
+      const ws = new WebSocket("ws://localhost:3008");
+
+      ws.onopen = () => {
+        console.log("WebSocket connected");
+      };
+
+      ws.onmessage = (event) => {
+        console.log("does it run??", event.data);
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.innerHTML += `<p>${event.data}</p>`;
+      };
+      function sendMessage() {
+        console.log("sending");
+        const messageInput = document.getElementById("messageInput");
+        let session_status;
+        if (messageInput.value === "start") {
+          session_status = true;
+        }
+        if (messageInput.value === "stop") {
+          session_status = false;
+        }
+
+        const payload = {
+          type: "session Id Change",
+          url: window.top.location.href,
+          data: messageInput.value,
+          session_status,
+        };
+        ws.send(JSON.stringify(payload));
+        messageInput.value = "";
+      }
+    </script>
+  </body>
+</html>
